@@ -4,10 +4,15 @@
   <meta charset="utf-8">
   <title>Task Manager</title>
   <script>
-    // Redirect to index.html with the current path
+    // Get the current path without the /task-manager prefix
     var path = window.location.pathname;
-    var newPath = path.replace('/task-manager', '');
-    window.location.href = '/task-manager/index.html' + newPath;
+    var redirectPath = path.replace('/task-manager', '');
+    
+    // Store the path in sessionStorage
+    sessionStorage.setItem('redirectPath', redirectPath);
+    
+    // Redirect to index.html
+    window.location.href = '/task-manager/index.html';
   </script>
 </head>
 <body>

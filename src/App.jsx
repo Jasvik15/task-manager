@@ -4,6 +4,7 @@ import Admin from './pages/Admin';
 import Dashboard from './pages/Dashboard';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { useEffect } from 'react';
 
 const theme = createTheme({
   typography: {
@@ -26,6 +27,19 @@ const theme = createTheme({
 });
 
 function App() {
+  useEffect(() => {
+    // Handle redirect from 404.html
+    if (window.__redirectTo) {
+      const redirectPath = window.__redirectTo;
+      delete window.__redirectTo;
+      if (redirectPath === '/dashboard') {
+        window.location.hash = '#/dashboard';
+      } else if (redirectPath === '/admin') {
+        window.location.hash = '#/admin';
+      }
+    }
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
