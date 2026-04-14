@@ -30,7 +30,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <TaskProvider>
-        <Router>
+        <Router basename="/task-manager">
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />
