@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Task Manager</title>
+  <script>
+    // Redirect to index.html with the current path
+    var path = window.location.pathname;
+    var newPath = path.replace('/task-manager', '');
+    window.location.href = '/task-manager/index.html' + newPath;
+  </script>
+</head>
+<body>
+  Redirecting...
+</body>
+</html>
