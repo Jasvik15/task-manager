@@ -17,6 +17,16 @@ import {
   Tooltip,
   Snackbar,
   Alert,
+  useMediaQuery,
+  useTheme,
+  Card,
+  CardContent,
+  Grid2,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,6 +34,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import EditIcon from '@mui/icons-material/Edit';
 
 const statusOptions = ['Not Started', 'On Process', 'Completed'];
 
@@ -48,10 +59,14 @@ const formatDateForDisplay = (dateString) => {
 
 const Admin = () => {
   const { tasks, addTask, updateTask, deleteTask, reorderTasks, loading } = useTasks();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [draggedItem, setDraggedItem] = useState(null);
+  const [editDialog, setEditDialog] = useState({ open: false, task: null, field: '' });
   const dragOverItem = useRef(null);
 
   if (loading) {
@@ -67,8 +82,30 @@ const Admin = () => {
     if (field === 'targetDate' && currentValue) {
       displayValue = formatDateForDisplay(currentValue);
     }
-    setEditingCell({ taskId, field });
-    setEditValue(displayValue || '');
+    
+    if (isMobile) {
+      const task = tasks.find(t => t.id === taskId);
+      setEditDialog({ open: true, task, field, value: displayValue || '' });
+    } else {
+      setEditingCell({ taskId, field });
+      setEditValue(displayValue || '');
+    }
+  };
+
+  const handleDialogSave = () => {
+    const { task, field, value } = editDialog;
+    let valueToSave = value;
+    
+    if (field === 'targetDate' && value) {
+      const parts = value.split('/');
+      if (parts.length === 3) {
+        valueToSave = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+    }
+    
+    updateTask(task.id, field, valueToSave);
+    setEditDialog({ open: false, task: null, field: '' });
+    setSnackbar({ open: true, message: 'Task updated successfully', severity: 'success' });
   };
 
   const handleSave = (taskId, field) => {
@@ -85,14 +122,6 @@ const Admin = () => {
       updateTask(taskId, field, valueToSave);
       setEditingCell(null);
       setSnackbar({ open: true, message: 'Task updated successfully', severity: 'success' });
-    }
-  };
-
-  const handleKeyDown = (e, taskId, field) => {
-    if (e.key === 'Enter') {
-      handleSave(taskId, field);
-    } else if (e.key === 'Escape') {
-      setEditingCell(null);
     }
   };
 
@@ -133,141 +162,165 @@ const Admin = () => {
     dragOverItem.current = null;
   };
 
-  const renderEditableCell = (task, field, displayValue) => {
-    const isEditing = editingCell?.taskId === task.id && editingCell?.field === field;
-
-    if (isEditing) {
-      if (field === 'status') {
-        return (
-          <select
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onBlur={() => handleSave(task.id, field)}
-            onKeyDown={(e) => handleKeyDown(e, task.id, field)}
-            autoFocus
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              borderRadius: 6,
-              border: '2px solid #1976d2',
-              outline: 'none',
-              fontSize: '0.875rem',
-              fontFamily: 'inherit',
-              backgroundColor: 'white',
-            }}
-          >
-            {statusOptions.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-        );
-      }
-
-      if (field === 'targetDate') {
-        return (
-          <input
-            type="text"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onBlur={() => handleSave(task.id, field)}
-            onKeyDown={(e) => handleKeyDown(e, task.id, field)}
-            placeholder="dd/mm/yyyy"
-            autoFocus
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              borderRadius: 6,
-              border: '2px solid #1976d2',
-              outline: 'none',
-              fontSize: '0.875rem',
-              fontFamily: 'inherit',
-            }}
-          />
-        );
-      }
-
-      return (
-        <input
-          type="text"
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onBlur={() => handleSave(task.id, field)}
-          onKeyDown={(e) => handleKeyDown(e, task.id, field)}
-          autoFocus
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            borderRadius: 6,
-            border: '2px solid #1976d2',
-            outline: 'none',
-            fontSize: '0.875rem',
-            fontFamily: 'inherit',
-          }}
-        />
-      );
-    }
-
-    if (field === 'status') {
-      const statusConfig = getStatusConfig(task.status);
-      return (
-        <Chip
-          label={task.status || 'Not Started'}
-          size="small"
-          sx={{
-            fontWeight: 500,
-            borderRadius: 2,
-            bgcolor: statusConfig.bg,
-            color: statusConfig.color,
-            cursor: 'pointer',
-            '&:hover': { bgcolor: statusConfig.bg, opacity: 0.8 },
-          }}
-          onClick={() => handleEdit(task.id, field, task.status)}
-        />
-      );
-    }
-
-    if (field === 'targetDate') {
-      return (
-        <Typography
-          onClick={() => handleEdit(task.id, field, task.targetDate)}
-          sx={{
-            cursor: 'pointer',
-            display: 'inline-block',
-            width: '100%',
-            '&:hover': { color: '#1976d2' },
-          }}
-        >
-          {task.targetDate ? formatDateForDisplay(task.targetDate) : 'Click to add date'}
-        </Typography>
-      );
-    }
-
+  // Mobile view: Cards instead of Table
+  if (isMobile) {
     return (
-      <Typography
-        onClick={() => handleEdit(task.id, field, task[field])}
-        sx={{
-          cursor: 'pointer',
-          display: 'inline-block',
-          width: '100%',
-          wordBreak: 'break-word',
-          '&:hover': { color: '#1976d2' },
-        }}
-      >
-        {task[field] || 'Click to edit'}
-      </Typography>
-    );
-  };
+      <Container maxWidth="sm" sx={{ py: 2, minHeight: '100vh' }}>
+        <Typography
+          variant="h5"
+          component="h1"
+          align="center"
+          sx={{ fontWeight: 700, mb: 2, color: '#1e3c72' }}
+        >
+          Admin Dashboard
+        </Typography>
 
+        {tasks.map((task, index) => {
+          const statusConfig = getStatusConfig(task.status);
+          return (
+            <Card 
+              key={task.id} 
+              sx={{ mb: 2, borderRadius: 2, position: 'relative' }}
+              draggable
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragEnd={handleDragEnd}
+              onDragOver={(e) => handleDragOver(e, index)}
+              onDrop={(e) => handleDrop(e, index)}
+            >
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <DragIndicatorIcon sx={{ color: '#999', cursor: 'grab' }} />
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      #{task.slNo} - {task.machineNo || 'No Machine'}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={task.status || 'Not Started'}
+                    size="small"
+                    sx={{ bgcolor: statusConfig.bg, color: statusConfig.color }}
+                    onClick={() => handleEdit(task.id, 'status', task.status)}
+                  />
+                </Box>
+                
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary">Description:</Typography>
+                  <Typography variant="body2" onClick={() => handleEdit(task.id, 'description', task.description)} sx={{ cursor: 'pointer' }}>
+                    {task.description || 'Click to edit'}
+                  </Typography>
+                </Box>
+                
+                <Grid2 container spacing={1} sx={{ mb: 1 }}>
+                  <Grid2 size={6}>
+                    <Typography variant="caption" color="text.secondary">Target Date:</Typography>
+                    <Typography variant="body2" onClick={() => handleEdit(task.id, 'targetDate', task.targetDate)} sx={{ cursor: 'pointer' }}>
+                      {task.targetDate ? formatDateForDisplay(task.targetDate) : 'Click to add'}
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <Typography variant="caption" color="text.secondary">Remarks:</Typography>
+                    <Typography variant="body2" onClick={() => handleEdit(task.id, 'remarks', task.remarks)} sx={{ cursor: 'pointer' }}>
+                      {task.remarks || 'Click to edit'}
+                    </Typography>
+                  </Grid2>
+                </Grid2>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 1 }}>
+                  <Tooltip title="Save">
+                    <IconButton size="small" sx={{ color: '#2e7d32' }}>
+                      <SaveIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton size="small" onClick={() => handleDelete(task.id)} sx={{ color: '#d32f2f' }}>
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </CardContent>
+            </Card>
+          );
+        })}
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 3 }}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAddTask}
+            fullWidth
+            sx={{ py: 1.5, borderRadius: 2, bgcolor: '#2e7d32' }}
+          >
+            Add New Task
+          </Button>
+          <Button
+            component={Link}
+            to="/dashboard"
+            variant="outlined"
+            startIcon={<VisibilityIcon />}
+            fullWidth
+            sx={{ py: 1.5, borderRadius: 2 }}
+          >
+            View Dashboard
+          </Button>
+        </Box>
+
+        {/* Edit Dialog for Mobile */}
+        <Dialog open={editDialog.open} onClose={() => setEditDialog({ open: false, task: null, field: '' })}>
+          <DialogTitle>Edit {editDialog.field}</DialogTitle>
+          <DialogContent>
+            {editDialog.field === 'status' ? (
+              <select
+                value={editDialog.value}
+                onChange={(e) => setEditDialog({ ...editDialog, value: e.target.value })}
+                style={{ width: '100%', padding: '12px', borderRadius: 8, marginTop: 8 }}
+              >
+                {statusOptions.map(opt => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            ) : (
+              <TextField
+                autoFocus
+                margin="dense"
+                fullWidth
+                value={editDialog.value}
+                onChange={(e) => setEditDialog({ ...editDialog, value: e.target.value })}
+                placeholder={editDialog.field === 'targetDate' ? 'dd/mm/yyyy' : ''}
+              />
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditDialog({ open: false, task: null, field: '' })}>Cancel</Button>
+            <Button onClick={handleDialogSave} variant="contained">Save</Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert severity={snackbar.severity} sx={{ borderRadius: 1 }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </Container>
+    );
+  }
+
+  // Desktop/Tablet view: Table
   return (
-    <Container maxWidth="xl" sx={{ py: 4, minHeight: '100vh' }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, md: 4 }, minHeight: '100vh' }}>
       <Typography
-        variant="h4"
+        variant={isTablet ? "h5" : "h4"}
         component="h1"
         align="center"
         sx={{
           fontWeight: 700,
-          mb: 4,
+          mb: { xs: 2, sm: 3, md: 4 },
           color: '#1e3c72',
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
         }}
       >
         Admin Dashboard
@@ -276,23 +329,23 @@ const Admin = () => {
       <TableContainer
         component={Paper}
         sx={{
-          borderRadius: 1,
+          borderRadius: 2,
           boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-          overflow: 'hidden',
-          mb: 4,
+          overflowX: 'auto',
+          mb: { xs: 2, sm: 3, md: 4 },
         }}
       >
-        <Table sx={{ minWidth: 800 }}>
+        <Table sx={{ minWidth: { xs: 700, sm: 800, md: 900 } }}>
           <TableHead>
             <TableRow sx={{ bgcolor: '#1e3c72' }}>
-              <TableCell sx={{ color: 'white', fontWeight: 600, width: '50px' }}>Drag</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Sl.No</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Machine No</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Description</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Status</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Target Date</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Remarks</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }} align="center">Actions</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }}>Drag</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }}>Sl.No</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }}>Machine No</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }}>Description</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }}>Status</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }}>Target Date</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }}>Remarks</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' } }} align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -311,66 +364,75 @@ const Admin = () => {
                   transition: 'background-color 0.2s',
                 }}
               >
-                <TableCell sx={{ cursor: 'grab', textAlign: 'center' }}>
+                <TableCell sx={{ cursor: 'grab', textAlign: 'center', py: { xs: 1, sm: 1.5 } }}>
                   <DragIndicatorIcon sx={{ color: '#999' }} />
                 </TableCell>
-                <TableCell sx={{ p: 2 }}>{renderEditableCell(task, 'slNo', task.slNo)}</TableCell>
-                <TableCell sx={{ p: 2 }}>{renderEditableCell(task, 'machineNo', task.machineNo)}</TableCell>
-                <TableCell sx={{ p: 2 }}>{renderEditableCell(task, 'description', task.description)}</TableCell>
-                <TableCell sx={{ p: 2 }}>{renderEditableCell(task, 'status', task.status)}</TableCell>
-                <TableCell sx={{ p: 2 }}>{renderEditableCell(task, 'targetDate', task.targetDate)}</TableCell>
-                <TableCell sx={{ p: 2 }}>{renderEditableCell(task, 'remarks', task.remarks)}</TableCell>
-                <TableCell align="center" sx={{ p: 2 }}>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{task.slNo}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{task.machineNo || '—'}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{task.description || '—'}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>
+                  <Chip
+                    label={task.status || 'Not Started'}
+                    size="small"
+                    sx={{
+                      fontWeight: 500,
+                      borderRadius: 2,
+                      bgcolor: getStatusConfig(task.status).bg,
+                      color: getStatusConfig(task.status).color,
+                      cursor: 'pointer',
+                      fontSize: { xs: '0.7rem', sm: '0.8rem' }
+                    }}
+                    onClick={() => handleEdit(task.id, 'status', task.status)}
+                  />
+                </TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>
+                  <Typography
+                    onClick={() => handleEdit(task.id, 'targetDate', task.targetDate)}
+                    sx={{ cursor: 'pointer', '&:hover': { color: '#1976d2' } }}
+                  >
+                    {task.targetDate ? formatDateForDisplay(task.targetDate) : 'Click to add'}
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>
+                  <Typography
+                    onClick={() => handleEdit(task.id, 'remarks', task.remarks)}
+                    sx={{ cursor: 'pointer', '&:hover': { color: '#1976d2' } }}
+                  >
+                    {task.remarks || 'Click to edit'}
+                  </Typography>
+                </TableCell>
+                <TableCell align="center" sx={{ p: { xs: 1, sm: 2 } }}>
                   <Tooltip title="Save Changes">
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        setSnackbar({ open: true, message: 'All changes saved', severity: 'success' });
-                      }}
-                      sx={{ color: '#2e7d32', mr: 1, '&:hover': { backgroundColor: '#e8f5e9' } }}
-                    >
+                    <IconButton size="small" sx={{ color: '#2e7d32', mr: 0.5 }}>
                       <SaveIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete Task">
-                    <IconButton 
-                      size="small" 
-                      onClick={() => handleDelete(task.id)} 
-                      sx={{ color: '#d32f2f', '&:hover': { backgroundColor: '#ffebee' } }}
-                    >
+                    <IconButton size="small" onClick={() => handleDelete(task.id)} sx={{ color: '#d32f2f' }}>
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
-            {tasks.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
-                  <Typography color="text.secondary">No tasks available. Click "Add New Task" to create one.</Typography>
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, flexWrap: 'wrap' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: { xs: 2, sm: 3 }, flexWrap: 'wrap', flexDirection: { xs: 'column', sm: 'row' } }}>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddTask}
+          fullWidth={isTablet}
           sx={{
-            px: 4,
-            py: 1.2,
+            px: { xs: 3, sm: 4, md: 5 },
+            py: { xs: 1, sm: 1.2, md: 1.5 },
             borderRadius: 2,
             textTransform: 'none',
-            fontSize: '1rem',
+            fontSize: { xs: '0.875rem', sm: '1rem' },
             fontWeight: 600,
             bgcolor: '#2e7d32',
-            '&:hover': {
-              bgcolor: '#1b5e20',
-            },
           }}
         >
           Add New Task
@@ -380,18 +442,14 @@ const Admin = () => {
           to="/dashboard"
           variant="outlined"
           startIcon={<VisibilityIcon />}
+          fullWidth={isTablet}
           sx={{
-            px: 4,
-            py: 1.2,
+            px: { xs: 3, sm: 4, md: 5 },
+            py: { xs: 1, sm: 1.2, md: 1.5 },
             borderRadius: 2,
             textTransform: 'none',
-            fontSize: '1rem',
+            fontSize: { xs: '0.875rem', sm: '1rem' },
             fontWeight: 600,
-            borderWidth: 2,
-            '&:hover': {
-              borderWidth: 2,
-              bgcolor: '#f5f5f5',
-            },
           }}
         >
           View Dashboard
