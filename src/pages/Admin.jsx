@@ -21,7 +21,6 @@ import {
   useTheme,
   Card,
   CardContent,
-  Grid2,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -34,7 +33,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import EditIcon from '@mui/icons-material/Edit';
 
 const statusOptions = ['Not Started', 'On Process', 'Completed'];
 
@@ -66,7 +64,7 @@ const Admin = () => {
   const [editValue, setEditValue] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [draggedItem, setDraggedItem] = useState(null);
-  const [editDialog, setEditDialog] = useState({ open: false, task: null, field: '' });
+  const [editDialog, setEditDialog] = useState({ open: false, task: null, field: '', value: '' });
   const dragOverItem = useRef(null);
 
   if (loading) {
@@ -104,7 +102,7 @@ const Admin = () => {
     }
     
     updateTask(task.id, field, valueToSave);
-    setEditDialog({ open: false, task: null, field: '' });
+    setEditDialog({ open: false, task: null, field: '', value: '' });
     setSnackbar({ open: true, message: 'Task updated successfully', severity: 'success' });
   };
 
@@ -210,20 +208,20 @@ const Admin = () => {
                   </Typography>
                 </Box>
                 
-                <Grid2 container spacing={1} sx={{ mb: 1 }}>
-                  <Grid2 size={6}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 1 }}>
+                  <Box sx={{ flex: 1 }}>
                     <Typography variant="caption" color="text.secondary">Target Date:</Typography>
                     <Typography variant="body2" onClick={() => handleEdit(task.id, 'targetDate', task.targetDate)} sx={{ cursor: 'pointer' }}>
                       {task.targetDate ? formatDateForDisplay(task.targetDate) : 'Click to add'}
                     </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
                     <Typography variant="caption" color="text.secondary">Remarks:</Typography>
                     <Typography variant="body2" onClick={() => handleEdit(task.id, 'remarks', task.remarks)} sx={{ cursor: 'pointer' }}>
                       {task.remarks || 'Click to edit'}
                     </Typography>
-                  </Grid2>
-                </Grid2>
+                  </Box>
+                </Box>
                 
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 1 }}>
                   <Tooltip title="Save">
@@ -265,7 +263,7 @@ const Admin = () => {
         </Box>
 
         {/* Edit Dialog for Mobile */}
-        <Dialog open={editDialog.open} onClose={() => setEditDialog({ open: false, task: null, field: '' })}>
+        <Dialog open={editDialog.open} onClose={() => setEditDialog({ open: false, task: null, field: '', value: '' })}>
           <DialogTitle>Edit {editDialog.field}</DialogTitle>
           <DialogContent>
             {editDialog.field === 'status' ? (
@@ -290,7 +288,7 @@ const Admin = () => {
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setEditDialog({ open: false, task: null, field: '' })}>Cancel</Button>
+            <Button onClick={() => setEditDialog({ open: false, task: null, field: '', value: '' })}>Cancel</Button>
             <Button onClick={handleDialogSave} variant="contained">Save</Button>
           </DialogActions>
         </Dialog>
