@@ -1,21 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Task Manager</title>
-  <script>
-    // Get the current path without the /task-manager prefix
-    var path = window.location.pathname;
-    var redirectPath = path.replace('/task-manager', '');
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Production Task Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
-    // Store the path in sessionStorage
-    sessionStorage.setItem('redirectPath', redirectPath);
-    
-    // Redirect to index.html
-    window.location.href = '/task-manager/index.html';
-  </script>
-</head>
-<body>
-  Redirecting...
-</body>
+    <!-- GitHub Pages SPA redirect handling (fixed - no flicker) -->
+    <script>
+      (function() {
+        const redirect = sessionStorage.getItem("gh-pages-redirect");
+        if (redirect) {
+          sessionStorage.removeItem("gh-pages-redirect");
+          // Use history.replaceState instead of window.location.replace
+          // This prevents infinite reload loop
+          window.history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
