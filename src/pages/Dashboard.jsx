@@ -61,10 +61,10 @@ const Dashboard = () => {
             letterSpacing: '-0.5px',
           }}
         >
-          Production Task Dashboard
+          Maintenance Task Dashboard
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1 }}>
-          Real-time production task monitoring
+          Projects & Pending activities
         </Typography>
       </Box>
 
