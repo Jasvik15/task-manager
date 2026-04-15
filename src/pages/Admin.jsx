@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useTasks } from '../context/TaskContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Container,
   Typography,
@@ -27,11 +28,10 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import EditIcon from '@mui/icons-material/Edit';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const statusOptions = ['Not Started', 'On Process', 'Completed'];
 
@@ -59,14 +59,9 @@ const formatDateForDisplay = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
-const formatDateForStorage = (dateString) => {
-  if (!dateString) return '';
-  const [day, month, year] = dateString.split('/');
-  return `${year}-${month}-${day}`;
-};
-
 const Admin = () => {
   const { tasks, addTask, updateTask, deleteTask, reorderTasks, loading } = useTasks();
+  const { logout } = useAuth();
   const [editDialog, setEditDialog] = useState({ open: false, task: null, field: '', value: '' });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [draggedItem, setDraggedItem] = useState(null);
@@ -183,14 +178,19 @@ const Admin = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4, minHeight: '100vh' }}>
-      <Typography
-        variant="h4"
-        component="h1"
-        align="center"
-        sx={{ fontWeight: 700, mb: 4, color: '#1e3c72' }}
-      >
-        Admin Dashboard
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: '#1e3c72' }}>
+          Admin Dashboard
+        </Typography>
+        <Button
+          variant="outlined"
+          startIcon={<LogoutIcon />}
+          onClick={logout}
+          sx={{ textTransform: 'none', borderColor: '#d32f2f', color: '#d32f2f', '&:hover': { borderColor: '#d32f2f', bgcolor: '#ffebee' } }}
+        >
+          Logout
+        </Button>
+      </Box>
 
       <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.12)', overflowX: 'auto', mb: 4 }}>
         <Table sx={{ minWidth: 800 }}>
