@@ -10,7 +10,6 @@ export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Real-time listener for tasks from Firebase
   useEffect(() => {
     const q = query(collection(db, 'tasks'), orderBy('slNo', 'asc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
