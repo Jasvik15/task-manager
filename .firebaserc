@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "tasks-dashboard-7061e"
-  }
+    "default": "tasks-dashboard-7061e",
+    "pending-task": "pending-tasks-app"
+  },
+  "targets": {},
+  "etags": {}
 }

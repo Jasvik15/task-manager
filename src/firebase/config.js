@@ -1,14 +1,19 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA5quo5WFSkAr7AZG4_rb6vjbABMnVGx14",
-  authDomain: "tasks-dashboard-7061e.firebaseapp.com",
-  projectId: "tasks-dashboard-7061e",
-  storageBucket: "tasks-dashboard-7061e.firebasestorage.app",
-  messagingSenderId: "306322949381",
-  appId: "1:306322949381:web:5fc35d3a6bfd2bdac3e36c"
+  apiKey: "AIzaSyCcZYk3ysceTG9snd--jO3mJFB1wycCx28",
+  authDomain: "pending-tasks-app.firebaseapp.com",
+  projectId: "pending-tasks-app",
+  storageBucket: "pending-tasks-app.firebasestorage.app",
+  messagingSenderId: "1013491501599",
+  appId: "1:1013491501599:web:a66cffeeefb2323d81a32a",
+  measurementId: "G-29TSPW4CD1"
 };
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const analytics = getAnalytics(app);
