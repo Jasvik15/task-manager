@@ -61,7 +61,7 @@ const Dashboard = () => {
             letterSpacing: '-0.5px',
           }}
         >
-          Maintenance Task Dashboard
+          SCM Task Dashboard
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1 }}>
           Projects & Pending activities
