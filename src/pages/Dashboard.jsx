@@ -1,4 +1,5 @@
 import { useTasks } from '../context/TaskContext';
+import { tableConfig } from '../config/tableConfig';
 import {
   Container,
   Typography,
@@ -37,6 +38,7 @@ const formatDate = (dateString) => {
 
 const Dashboard = () => {
   const { tasks, loading } = useTasks();
+  const { headers, visibleFields, titles, buttons } = tableConfig;
 
   if (loading) {
     return (
@@ -61,10 +63,10 @@ const Dashboard = () => {
             letterSpacing: '-0.5px',
           }}
         >
-          SCM Task Dashboard
+          {titles.dashboard}
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1 }}>
-          Projects & Pending activities
+          {titles.dashboardSub}
         </Typography>
       </Box>
 
@@ -72,12 +74,24 @@ const Dashboard = () => {
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow sx={{ bgcolor: '#1e3c72' }}>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Sl.No</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Plant</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Description</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Status</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Target Date</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Remarks</TableCell>
+              {visibleFields.includes('slNo') && (
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.slNo}</TableCell>
+              )}
+              {visibleFields.includes('plant') && (
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.plant}</TableCell>
+              )}
+              {visibleFields.includes('description') && (
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.description}</TableCell>
+              )}
+              {visibleFields.includes('status') && (
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.status}</TableCell>
+              )}
+              {visibleFields.includes('targetDate') && (
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.targetDate}</TableCell>
+              )}
+              {visibleFields.includes('remarks') && (
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.remarks}</TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -85,25 +99,37 @@ const Dashboard = () => {
               const statusConfig = getStatusConfig(task.status);
               return (
                 <TableRow key={task.id} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                  <TableCell>{task.slNo}</TableCell>
-                  <TableCell>
-                    <Typography fontWeight={500}>{task.machineNo || '—'}</Typography>
-                  </TableCell>
-                  <TableCell>{task.description || '—'}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={statusConfig.label}
-                      sx={{
-                        fontWeight: 500,
-                        borderRadius: 2,
-                        bgcolor: statusConfig.bg,
-                        color: statusConfig.color,
-                      }}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>{formatDate(task.targetDate)}</TableCell>
-                  <TableCell>{task.remarks || '—'}</TableCell>
+                  {visibleFields.includes('slNo') && (
+                    <TableCell>{task.slNo}</TableCell>
+                  )}
+                  {visibleFields.includes('plant') && (
+                    <TableCell>
+                      <Typography fontWeight={500}>{task.machineNo || '—'}</Typography>
+                    </TableCell>
+                  )}
+                  {visibleFields.includes('description') && (
+                    <TableCell>{task.description || '—'}</TableCell>
+                  )}
+                  {visibleFields.includes('status') && (
+                    <TableCell>
+                      <Chip
+                        label={statusConfig.label}
+                        sx={{
+                          fontWeight: 500,
+                          borderRadius: 2,
+                          bgcolor: statusConfig.bg,
+                          color: statusConfig.color,
+                        }}
+                        size="small"
+                      />
+                    </TableCell>
+                  )}
+                  {visibleFields.includes('targetDate') && (
+                    <TableCell>{formatDate(task.targetDate)}</TableCell>
+                  )}
+                  {visibleFields.includes('remarks') && (
+                    <TableCell>{task.remarks || '—'}</TableCell>
+                  )}
                 </TableRow>
               );
             })}
@@ -126,7 +152,7 @@ const Dashboard = () => {
             fontWeight: 600,
           }}
         >
-          Admin Panel
+          {buttons.adminPanel}
         </Button>
       </Box>
     </Container>
