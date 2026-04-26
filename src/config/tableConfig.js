@@ -4,7 +4,7 @@ export const tableConfig = {
   // Column Headers (change these labels as needed)
   headers: {
     slNo: "Sl.No",           
-    plant: "machine No",          
+    plant: "Plant",          
     description: "Description",
     status: "Status",
     targetDate: "Start Date",     // Start Date column
