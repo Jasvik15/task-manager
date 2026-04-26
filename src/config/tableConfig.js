@@ -3,16 +3,18 @@
 export const tableConfig = {
   // Column Headers (change these labels as needed)
   headers: {
-    slNo: "Sl.No",           // Change to "Start Date" or "ID" etc.
-    plant: "Plant",          // Change to "Machine" or "Location" etc.
+    slNo: "Sl.No",           
+    plant: "Plant",          
     description: "Description",
     status: "Status",
-    targetDate: "Target Date",  // Change to "End Date" or "Due Date"
-    remarks: "End Remarks"
+    targetDate: "Start Date",     // Start Date column
+    closeDate: "Close Date",      // NEW Close Date column
+    remarks: "End Remarks"        // Keep original remarks
   },
   
-  // Which fields to display (reorder or remove fields here) //DO NOT CHANGE THE FIELD NAMES, ONLY THE ORDER OR WHICH FIELDS TO SHOW
-  visibleFields: ["slNo", "plant", "description", "status", "targetDate", "remarks"],
+  // Which fields to display (reorder or remove fields here)
+  // DO NOT CHANGE THE FIELD NAMES, ONLY THE ORDER OR WHICH FIELDS TO SHOW
+  visibleFields: ["slNo", "plant", "description", "status", "targetDate", "closeDate", "remarks"],
   
   // Page Titles - Change these
   titles: {
@@ -21,7 +23,7 @@ export const tableConfig = {
     admin: "Admin Dashboard"
   },
   
-  // Button texts - ADD THIS SECTION (it was missing)
+  // Button texts
   buttons: {
     adminPanel: "Admin Panel",
     addTask: "Add New Task",

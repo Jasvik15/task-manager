@@ -89,6 +89,9 @@ const Dashboard = () => {
               {visibleFields.includes('targetDate') && (
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.targetDate}</TableCell>
               )}
+              {visibleFields.includes('closeDate') && (
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.closeDate}</TableCell>
+              )}
               {visibleFields.includes('remarks') && (
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.remarks}</TableCell>
               )}
@@ -126,6 +129,9 @@ const Dashboard = () => {
                   )}
                   {visibleFields.includes('targetDate') && (
                     <TableCell>{formatDate(task.targetDate)}</TableCell>
+                  )}
+                  {visibleFields.includes('closeDate') && (
+                    <TableCell>{formatDate(task.closeDate)}</TableCell>
                   )}
                   {visibleFields.includes('remarks') && (
                     <TableCell>{task.remarks || '—'}</TableCell>

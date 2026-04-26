@@ -32,6 +32,7 @@ export const TaskProvider = ({ children }) => {
       description: '',
       status: 'Not Started',
       targetDate: '',
+      closeDate: '',        // ADD THIS LINE - New field
       remarks: '',
       createdAt: new Date().toISOString()
     };

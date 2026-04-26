@@ -84,7 +84,7 @@ const Admin = () => {
 
   const handleEdit = (task, field, currentValue) => {
     let displayValue = currentValue || '';
-    if (field === 'targetDate' && currentValue) {
+    if ((field === 'targetDate' || field === 'closeDate') && currentValue) {
       displayValue = formatDateForDisplay(currentValue);
     }
     setEditDialog({ open: true, task, field, value: displayValue });
@@ -94,7 +94,7 @@ const Admin = () => {
     const { task, field, value } = editDialog;
     let valueToSave = value;
     
-    if (field === 'targetDate' && value) {
+    if ((field === 'targetDate' || field === 'closeDate') && value) {
       const parts = value.split('/');
       if (parts.length === 3) {
         valueToSave = `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -160,6 +160,7 @@ const Admin = () => {
       'description': task.description,
       'status': task.status,
       'targetDate': task.targetDate,
+      'closeDate': task.closeDate,    // ADD THIS
       'remarks': task.remarks
     };
     return fieldMap[field];
@@ -185,7 +186,7 @@ const Admin = () => {
       );
     }
     
-    if (field === 'targetDate') {
+    if (field === 'targetDate' || field === 'closeDate') {
       return (
         <Typography
           onClick={() => handleEdit(task, field, value)}
@@ -244,6 +245,9 @@ const Admin = () => {
                 {visibleFields.includes('targetDate') && (
                   <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.targetDate}</TableCell>
                 )}
+                {visibleFields.includes('closeDate') && (
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.closeDate}</TableCell>
+                )}
                 {visibleFields.includes('remarks') && (
                   <TableCell sx={{ color: 'white', fontWeight: 600 }}>{headers.remarks}</TableCell>
                 )}
@@ -284,6 +288,9 @@ const Admin = () => {
                   {visibleFields.includes('targetDate') && (
                     <TableCell>{renderCellValue(task, 'targetDate')}</TableCell>
                   )}
+                  {visibleFields.includes('closeDate') && (
+                    <TableCell>{renderCellValue(task, 'closeDate')}</TableCell>
+                  )}
                   {visibleFields.includes('remarks') && (
                     <TableCell>{renderCellValue(task, 'remarks')}</TableCell>
                   )}
@@ -298,7 +305,7 @@ const Admin = () => {
               ))}
               {tasks.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
+                  <TableCell colSpan={9} align="center" sx={{ py: 5 }}>
                     <Typography color="text.secondary">No tasks available. Click "Add New Task" to create one.</Typography>
                   </TableCell>
                 </TableRow>
@@ -345,9 +352,9 @@ const Admin = () => {
           </Button>
         </Box>
 
-        {/* Edit Dialog with Date Picker for targetDate */}
+        {/* Edit Dialog with Date Picker */}
         <Dialog open={editDialog.open} onClose={() => setEditDialog({ open: false, task: null, field: '', value: '' })}>
-          <DialogTitle>Edit {editDialog.field}</DialogTitle>
+          <DialogTitle>Edit {editDialog.field === 'targetDate' ? 'Start Date' : editDialog.field === 'closeDate' ? 'Close Date' : editDialog.field}</DialogTitle>
           <DialogContent>
             {editDialog.field === 'status' ? (
               <Select
@@ -360,10 +367,10 @@ const Admin = () => {
                   <MenuItem key={opt} value={opt}>{opt}</MenuItem>
                 ))}
               </Select>
-            ) : editDialog.field === 'targetDate' ? (
+            ) : (editDialog.field === 'targetDate' || editDialog.field === 'closeDate') ? (
               <Box sx={{ mt: 2 }}>
                 <DatePicker
-                  label="Select Target Date"
+                  label={editDialog.field === 'targetDate' ? "Select Start Date" : "Select Close Date"}
                   value={editDialog.value ? dayjs(editDialog.value) : null}
                   onChange={handleDateChange}
                   format="DD/MM/YYYY"
@@ -382,7 +389,6 @@ const Admin = () => {
                 fullWidth
                 value={editDialog.value}
                 onChange={(e) => setEditDialog({ ...editDialog, value: e.target.value })}
-                placeholder={editDialog.field === 'targetDate' ? 'dd/mm/yyyy' : ''}
               />
             )}
           </DialogContent>
