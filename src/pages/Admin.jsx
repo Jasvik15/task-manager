@@ -198,7 +198,7 @@ const Admin = () => {
             <TableRow sx={{ bgcolor: '#1e3c72' }}>
               <TableCell sx={{ color: 'white', fontWeight: 600, width: '50px' }}>Drag</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Sl.No</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Machine No</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Plant</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Description</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Status</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Target Date</TableCell>
@@ -226,7 +226,7 @@ const Admin = () => {
                   <DragIndicatorIcon sx={{ color: '#999' }} />
                 </TableCell>
                 <TableCell>{renderCellValue(task, 'slNo')}</TableCell>
-                <TableCell>{renderCellValue(task, 'machineNo')}</TableCell>
+                <TableCell>{renderCellValue(task, 'Plant')}</TableCell>
                 <TableCell>{renderCellValue(task, 'description')}</TableCell>
                 <TableCell>{renderCellValue(task, 'status')}</TableCell>
                 <TableCell>{renderCellValue(task, 'targetDate')}</TableCell>

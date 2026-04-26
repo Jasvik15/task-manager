@@ -73,7 +73,7 @@ const Dashboard = () => {
           <TableHead>
             <TableRow sx={{ bgcolor: '#1e3c72' }}>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Sl.No</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Machine No</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Plant</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Description</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Status</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Target Date</TableCell>
