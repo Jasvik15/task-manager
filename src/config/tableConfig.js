@@ -18,7 +18,7 @@ export const tableConfig = {
   
   // Page Titles - Change these
   titles: {
-    dashboard: "SCM Task Dashboard",
+    dashboard: "Maintenance Task Dashboard",
     dashboardSub: "Pending & On-going Activities",
     admin: "Admin Dashboard"
   },
