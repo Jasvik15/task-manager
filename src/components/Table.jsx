@@ -23,7 +23,7 @@ const Table = ({ tasks, onUpdate, onDelete, isEditable = false, onAdd }) => {
         <thead>
           <tr style={{ backgroundColor: '#f0f0f0' }}>
             <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Sl.No</th>
-            <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Plant</th>
+            <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Machine No</th>
             <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Description</th>
             <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Status</th>
             <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>End Date</th>
